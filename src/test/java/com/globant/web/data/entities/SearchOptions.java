@@ -3,6 +3,7 @@ package com.globant.web.data.entities;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Class to represent the search options
@@ -16,11 +17,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchOptions {
-    private String destination;
+    private String originCode;
+    private String destinationCode;
     private LocalDate checkinDate;
     private LocalDate checkoutDate;
     private int amountAdults;
     private int amountRooms;
     private int amountChildren;
-    private int ageKid;
+    private List<Integer> agesChildren;
 }

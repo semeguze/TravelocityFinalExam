@@ -7,6 +7,7 @@ import com.globant.web.data.entities.SearchOptions;
 import org.testng.annotations.DataProvider;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 /**
  * Class provide data as Data Provider class
@@ -14,17 +15,20 @@ import java.time.LocalDate;
  * @author Sebastian Mesa
  */
 public class Data {
+
     @DataProvider(name = "bookingSearchOptions")
     public Object[][] bookingSearchOptions() {
+
         LocalDate today = LocalDate.now();
-        LocalDate checkinDate = today.plusDays(30 - 1);
+        LocalDate checkinDate = today.plusDays(60 - 1);
         LocalDate checkoutDate = checkinDate.plusDays(15 - 1);
 
         return new Object[][]{{
                 Booking.builder().searchOptions(
                         SearchOptions.builder()
-                                .destination("Bogotá, Colombia").checkinDate(checkinDate).checkoutDate(checkoutDate)
-                                .amountAdults(3).amountRooms(1).amountChildren(1).ageKid(9).build()).person(
+                                .originCode("LAS").destinationCode("LAX")
+                                .checkinDate(checkinDate).checkoutDate(checkoutDate).amountAdults(3)
+                                .amountRooms(1).amountChildren(0).agesChildren(Arrays.asList()).build()).person(
                         Person.builder()
                                 .firstName("Sebastian").lastName("Mesa").email("sebastian@somemail.com").zipCode("1101")
                                 .countryCode("co").phone("3016667788").city("Bogotá").address("123 street")
@@ -38,4 +42,13 @@ public class Data {
                 2
         }};
     }
+
+    @DataProvider(name = "sortingOptions")
+    public Object[][] sortingOptions() {
+        return new Object[][]{{Arrays.asList("Price (Lowest)", "Price (Highest)",
+                "Duration (Shortest)", "Duration (Longest)", "Departure (Earliest)",
+                "Departure (Latest)", "Arrival (Earliest)", "Arrival (Latest)")
+        }};
+    }
+
 }

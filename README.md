@@ -1,9 +1,9 @@
-<h1 align="center">Welcome to Web Automation Academy Final Exam 👋</h1>
+<h1 align="center">Welcome to Web Automation Acádemy Final Exam 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0-blue.svg?cacheSeconds=2592000" />
 </p>
 
-> This project contains the resolution for the final exam of the TAE Academy at Globant using Booking.com #Sebas :)
+> This project contains the resolution for the final exam of the Web Automation Acámica course at Globant using Travelocity.com #BySebastianMesa :)
 
 ## Install
 
@@ -28,7 +28,7 @@ mvn clean install -DskipTests
 ```
 ## Captures
 
-![](https://i.imgur.com/NWjiGfB.png)
+
 
 # Notes!
 
@@ -46,7 +46,7 @@ mvn clean install -DskipTests
 
 ## Thank you
 
-Thank you guys for this Academy!
+Thank you guys for this course!
 
 ***
 _This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_

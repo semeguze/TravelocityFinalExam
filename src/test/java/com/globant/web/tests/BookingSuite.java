@@ -8,8 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+
 import static com.globant.web.utils.errorMessages.ErrorFinalDataPage.*;
-import static com.globant.web.utils.errorMessages.ErrorHomePage.*;
 import static com.globant.web.utils.errorMessages.ErrorPersonalDataPage.*;
 import static com.globant.web.utils.errorMessages.ErrorRecapPage.*;
 import static com.globant.web.utils.errorMessages.ErrorResultsPage.ERROR_LIST_HOTELS_EMPTY;
@@ -29,25 +30,39 @@ public class BookingSuite extends BaseTest {
         // HOME PAGE
 
         HomePage homePage = getHomePage();
-        homePage.selectSleepTab();
 
         SearchOptions options = booking.getSearchOptions();
-        log.info("Searching destination : {} ", options.getDestination());
-        Assert.assertTrue(homePage.verifyDestinationTFPresence(), ERROR_TEXTFIELD_DESTINATION_PRESENCE);
-        homePage.fillDestination(options.getDestination());
+        log.info("Searching a flight between : {}-{} ", options.getOriginCode(), options.getDestinationCode());
+        //Assert.assertTrue(homePage.verifyDestinationTFPresence(), ERROR_TEXTFIELD_DESTINATION_PRESENCE);
+        homePage.selectFlightTab();
+        homePage.selectRoundTripOption();
+        homePage.fillOriginDestination(options.getOriginCode(), options.getDestinationCode());
         log.info("Selecting dates. Checkin date : {} & Checkout Date : {}", options.getCheckinDate(), options.getCheckoutDate());
-        Assert.assertTrue(homePage.verifyDatesTFPresence(), ERROR_TEXTFIELD_DATES_PRESENCE);
+        //Assert.assertTrue(homePage.verifyDatesTFPresence(), ERROR_TEXTFIELD_DATES_PRESENCE);
         homePage.fillDates(options.getCheckinDate(), options.getCheckoutDate());
         log.info("Selecting guests. Total people : {} & Rooms : {}", options.getAmountAdults() + options.getAmountChildren(), options.getAmountRooms());
-        Assert.assertTrue(homePage.verifyGuestTFPresence(), ERROR_TEXTFIELD_GUESTS_PRESENCE);
-        homePage.selectGuests(options.getAmountAdults(), options.getAmountRooms(), options.getAmountChildren(), options.getAgeKid());
-        Assert.assertEquals(homePage.verifySearchButtonText(), "Buscar", ERROR_BUTTON_SEARCH_TEXT);
+        //Assert.assertTrue(homePage.verifyGuestTFPresence(), ERROR_TEXTFIELD_GUESTS_PRESENCE);
+        //homePage.selectGuests(options.getAmountAdults(), options.getAmountRooms(), options.getAmountChildren(), options.getAgeKid());
+        homePage.selectAmountAdults(options.getAmountAdults());
+        homePage.selectAmountChildren(options.getAmountChildren());
+        homePage.selectAgeChildren(options.getAgesChildren());
+        //Assert.assertEquals(homePage.verifySearchButtonText(), "Buscar", ERROR_BUTTON_SEARCH_TEXT);
 
         // ************************************************************************************************************
         // RESULTS PAGE
         ResultsPage resultsPage = homePage.confirmSearch();
 
-        log.info("Filtering results by 5 stars");
+        log.info("Performing validations");
+
+        Assert.assertTrue(resultsPage.verifySortOptions(Arrays.asList("Price (Lowest)", "Price (Highest)",
+                "Duration (Shortest)", "Duration (Longest)", "Departure (Earliest)",
+                "Departure (Latest)", "Arrival (Earliest)", "Arrival (Latest)")), "");
+        Assert.assertTrue(resultsPage.verifySelectButtonPresence(), "");
+        Assert.assertTrue(resultsPage.verifyFlightDurationPresence(), "");
+        Assert.assertTrue(resultsPage.verifyFlightFeesAndDetailsPresence(), "");
+        resultsPage.sortResults("duration:asc");
+        Assert.assertTrue(resultsPage.verifyListIsSorted(), "");
+
         resultsPage.filterByFiveStars();
         Assert.assertFalse(resultsPage.verifyAmountResults(), ERROR_LIST_HOTELS_EMPTY);
         Assert.assertTrue(resultsPage.verifyBasicFieldsInResults());

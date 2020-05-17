@@ -1,5 +1,6 @@
 package com.globant.web.pages;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -9,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -19,10 +22,12 @@ import java.util.stream.Stream;
  * @author Sebastian Mesa
  */
 @Slf4j
+@Getter
 public class BasePage {
 
     private final WebDriver driver;
     private final WebDriverWait wait;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     /**
      * Constructor.
@@ -36,30 +41,20 @@ public class BasePage {
     }
 
     /**
-     * Get the web driver wait.
-     *
-     * @return WebDriverWait
-     */
-    public WebDriverWait getWait() {
-        return wait;
-    }
-
-    /**
-     * Get the  web driver.
-     *
-     * @return WebDriver
-     */
-    protected WebDriver getDriver() {
-        return driver;
-    }
-
-    /**
      * Close the web driver.
      */
     public void dispose() {
         if (driver != null) {
             driver.quit();
         }
+    }
+
+    public LocalDate buildDateForCalendar(WebElement day) {
+        return LocalDate.parse(
+                day.getAttribute("data-year") + "-" +
+                        day.getAttribute("data-month") + "-" +
+                        day.getAttribute("data-day"), dateFormat)
+                .plusMonths(1);
     }
 
     // WAITS
@@ -119,7 +114,7 @@ public class BasePage {
         try {
             waitElementVisibility(modal);
             click(closeButton);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.warn("Modal is not displayed.");
         }
     }
@@ -221,6 +216,13 @@ public class BasePage {
         Select dropdown = new Select(element);
         dropdown.selectByValue(value);
         return dropdown.getFirstSelectedOption();
+    }
+
+    public boolean areValuesInTheDropdown(WebElement element, List<String> expectedOptions) {
+        waitElementVisibility(element);
+        for (WebElement option : new Select(element).getOptions())
+            if (!expectedOptions.contains(option.getText())) return false;
+        return true;
     }
 
     /**

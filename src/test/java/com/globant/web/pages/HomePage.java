@@ -15,16 +15,19 @@ import java.util.List;
 public class HomePage extends BasePage {
 
     // Tab
-    @FindBy(css = ".xpb__link:first-child")
-    private WebElement sleepTab;
+    @FindBy(id = "tab-flight-tab-hp")
+    private WebElement flightTab;
 
     // TextFields
-    @FindBy(id = "ss")
+    @FindBy(id = "flight-origin-hp-flight")
+    private WebElement originTextField;
+    @FindBy(id = "flight-destination-hp-flight")
     private WebElement destinationTextField;
-    @FindBy(className = "xp__dates__checkin")
+    @FindBy(id = "flight-departing-hp-flight")
     private WebElement checkinDateTextField;
-    @FindBy(className = "xp__dates__checkout")
+    @FindBy(id = "flight-returning-hp-flight")
     private WebElement checkoutDateTextField;
+
     @FindBy(className = "xp__guests__count")
     private WebElement guestsTextField;
 
@@ -37,31 +40,25 @@ public class HomePage extends BasePage {
     private WebElement amountRoomsLabel;
 
     // Buttons
-    @FindBy(css = ".sb-group__field-adults .bui-stepper__subtract-button")
-    private WebElement subtractAdultsButton;
-    @FindBy(css = ".sb-group-children .bui-stepper__subtract-button")
-    private WebElement subtractKidsButton;
-    @FindBy(css = ".sb-group__field-rooms .bui-stepper__subtract-button")
-    private WebElement subtractRoomsButton;
-    @FindBy(css = ".sb-group__field-adults .bui-stepper__add-button")
-    private WebElement addAdultsButton;
-    @FindBy(css = ".sb-group-children .bui-stepper__add-button")
-    private WebElement addKidsButton;
-    @FindBy(css = ".sb-group__field-rooms .bui-stepper__add-button")
-    private WebElement addRoomsButton;
-    @FindBy(className = "sb-searchbox__button")
+    @FindBy(id = "flight-type-roundtrip-label-hp-flight")
+    private WebElement roundTripButton;
+    @FindBy(css = "#section-flight-tab-hp .gcw-submit")
     private WebElement searchButton;
 
     // Dropdown
-    @FindBy(css = "[name='age']")
-    private WebElement ageKidDropdown;
+    @FindBy(id = "flight-adults-hp-flight")
+    private WebElement adultsDropdown;
+    @FindBy(id = "flight-children-hp-flight")
+    private WebElement childrenDropdown;
+    @FindBy(css = ".children-data select")
+    private List<WebElement> agesDropdown;
 
     // Calendar
-    @FindBy(className = "bui-calendar__control--next")
+    @FindBy(className = "datepicker-next")
     private WebElement nextMonthCalendarButton;
-    @FindBy(className = "bui-calendar")
+    @FindBy(className = "datepicker-cal")
     private WebElement calendarWidget;
-    @FindBy(css = "[class='bui-calendar__date']")
+    @FindBy(css = ".datepicker-cal tbody button:not(.disabled)")
     private List<WebElement> daysCalendar;
 
     /**
@@ -75,10 +72,14 @@ public class HomePage extends BasePage {
     }
 
     /**
-     * Method to select the sleep tab
+     * Method to select the flight tab
      */
-    public void selectSleepTab() {
-        click(sleepTab);
+    public void selectFlightTab() {
+        click(flightTab);
+    }
+
+    public void selectRoundTripOption() {
+        click(roundTripButton);
     }
 
     /**
@@ -86,7 +87,8 @@ public class HomePage extends BasePage {
      *
      * @param destination {@link String}
      */
-    public void fillDestination(String destination) {
+    public void fillOriginDestination(String origin, String destination) {
+        sendKeys(originTextField, origin);
         sendKeys(destinationTextField, destination);
     }
 
@@ -99,34 +101,8 @@ public class HomePage extends BasePage {
     public void fillDates(LocalDate checkinDate, LocalDate checkoutDate) {
         click(checkinDateTextField);
         selectDate(checkinDate, false);
+        click(checkoutDateTextField);
         selectDate(checkoutDate, false);
-    }
-
-    /**
-     * Method to fill the guests data
-     *
-     * @param amountAdults {@link Integer}
-     * @param amountRooms  {@link Integer}
-     * @param amountKids   {@link Integer}
-     * @param ageKid       {@link Integer}
-     */
-    public void selectGuests(int amountAdults, int amountRooms, int amountKids, int ageKid) {
-        click(guestsTextField);
-        selectAmountAdults(amountAdults);
-        selectAmountRooms(amountRooms);
-        selectAmountKids(amountKids, ageKid);
-    }
-
-    /**
-     * Method with the logic to select children
-     *
-     * @param amountKids {@link Integer}
-     * @param ageKid     {@link Integer}
-     */
-    private void selectAmountKids(int amountKids, int ageKid) {
-        while (Integer.parseInt(amountKidsLabel.getText()) > 0) click(subtractAdultsButton);
-        while (Integer.parseInt(amountKidsLabel.getText()) != amountKids) click(addKidsButton);
-        selectFromDropdownByValue(ageKidDropdown, Integer.toString(ageKid));
     }
 
     /**
@@ -134,19 +110,20 @@ public class HomePage extends BasePage {
      *
      * @param amountAdults {@link Integer}
      */
-    private void selectAmountAdults(int amountAdults) {
-        while (Integer.parseInt(amountAdultsLabel.getText()) > 1) click(subtractAdultsButton);
-        while (Integer.parseInt(amountAdultsLabel.getText()) != amountAdults) click(addAdultsButton);
+    public void selectAmountAdults(int amountAdults) {
+        selectFromDropdownByValue(adultsDropdown, Integer.toString(amountAdults));
     }
 
     /**
-     * Method with the logic to select rooms
-     *
-     * @param amountRooms {@link Integer}
+     * Method with the logic to select children
      */
-    private void selectAmountRooms(int amountRooms) {
-        while (Integer.parseInt(amountRoomsLabel.getText()) > 1) click(subtractAdultsButton);
-        while (Integer.parseInt(amountRoomsLabel.getText()) != amountRooms) click(addRoomsButton);
+    public void selectAmountChildren(int amountChildren) {
+        selectFromDropdownByValue(childrenDropdown, Integer.toString(amountChildren));
+    }
+
+    public void selectAgeChildren(List<Integer> listAgeChildren) {
+        for (int i = 0; i < listAgeChildren.size(); i++)
+            selectFromDropdownByValue(agesDropdown.get(i), Integer.toString(listAgeChildren.get(i)));
     }
 
     /**
@@ -159,11 +136,14 @@ public class HomePage extends BasePage {
         if (keepSearching) clickClickable(nextMonthCalendarButton);
         waitElementVisibility(calendarWidget);
         for (WebElement day : daysCalendar) {
-            LocalDate dayDate = LocalDate.parse(day.getAttribute("data-date"));
-            if (dayDate.getMonthValue() <= (date.getMonthValue() - 1)) {
+            LocalDate dayDate = buildDateForCalendar(day);
+            if (dayDate.getMonthValue() < date.getMonthValue()) {
                 selectDate(date, true);
                 return;
-            } else if (dayDate.isEqual(date)) clickClickable(day);
+            } else if (dayDate.isEqual(date)) {
+                clickClickable(day);
+                return;
+            }
         }
     }
 
@@ -217,5 +197,6 @@ public class HomePage extends BasePage {
     public boolean verifyGuestTFPresence() {
         return guestsTextField.isDisplayed();
     }
+
 
 }

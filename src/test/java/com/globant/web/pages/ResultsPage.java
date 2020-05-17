@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
@@ -26,10 +27,12 @@ public class ResultsPage extends BasePage {
     private WebElement fiveStarsCheckBox;
 
     // Containers
-    @FindBy(css = ".sr-usp-overlay__container.is_stuck")
-    private WebElement overlayFilterContainer;
-    @FindBy(css = ".sr_item.sr_item_new")
+    @FindBy(className = "flight-module")
     private List<WebElement> listHotelsContainer;
+
+    // Dropdown
+    @FindBy(id = "sortDropdown")
+    private WebElement sortingDropdown;
 
     /**
      * Constructor.
@@ -46,7 +49,7 @@ public class ResultsPage extends BasePage {
     public void filterByMaxPrice() {
         scrollIntoView(mostExpensivePriceCheckBox);
         click(mostExpensivePriceCheckBox);
-        waitElementVisibility(overlayFilterContainer);
+        //waitElementVisibility(overlayFilterContainer);
         waitElementStaleness(listHotelsContainer.get(0));
     }
 
@@ -56,7 +59,7 @@ public class ResultsPage extends BasePage {
     public void filterByFiveStars() {
         scrollIntoView(fiveStarsCheckBox);
         click(fiveStarsCheckBox);
-        waitElementVisibility(overlayFilterContainer);
+        //waitElementVisibility(overlayFilterContainer);
         waitElementStaleness(listHotelsContainer.get(0));
     }
 
@@ -112,5 +115,40 @@ public class ResultsPage extends BasePage {
      */
     public boolean verifyAmountResults() {
         return listHotelsContainer.isEmpty();
+    }
+
+    public boolean verifySortOptions(List<String> expectedSortingOptions) {
+        return areValuesInTheDropdown(sortingDropdown, expectedSortingOptions);
+    }
+
+    public boolean verifySelectButtonPresence() {
+        getWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("[data-test-id='offer-listing']")));
+        System.out.println("Hotels : " + listHotelsContainer.size());
+        for (WebElement hotel : listHotelsContainer)
+            if (!hotel.findElement(By.cssSelector(".grid-container button")).isDisplayed()) return false;
+        return true;
+    }
+
+    public boolean verifyFlightDurationPresence() {
+        for (WebElement hotel : listHotelsContainer)
+            if (!hotel.findElement(By.className("duration-emphasis")).isDisplayed()) return false;
+        return true;
+    }
+
+    public boolean verifyFlightFeesAndDetailsPresence() {
+        for (WebElement hotel : listHotelsContainer)
+            click(hotel.findElement(By.className("show-flight-details")));
+        return true;
+    }
+
+    public void sortResults(String sortingValue) {
+        selectFromDropdownByValue(sortingDropdown, sortingValue);
+        getWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("[data-test-id='offer-listing']")));
+    }
+
+    public boolean verifyListIsSorted() {
+        for (WebElement hotel : listHotelsContainer)
+            System.out.println("===============\n"+hotel.getText());
+        return true;
     }
 }

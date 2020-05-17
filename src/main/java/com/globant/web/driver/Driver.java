@@ -42,7 +42,7 @@ public class Driver {
 				driver = new FirefoxDriver();
 				break;
 			case "chrome":
-				System.setProperty("webdriver.chrome.driver", "./src/main/resources/chromedriver81Latest.exe");
+				System.setProperty("webdriver.chrome.driver", "./src/main/resources/chromedriverMac83");
 				driver = new ChromeDriver();
 				driver.manage().window().maximize();
 				break;
