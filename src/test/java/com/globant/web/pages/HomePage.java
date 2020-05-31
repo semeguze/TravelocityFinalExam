@@ -69,6 +69,7 @@ public class HomePage extends BasePage {
     public HomePage(WebDriver driver, String url) {
         super(driver);
         driver.get(url);
+        driver.manage().window().maximize();
     }
 
     /**

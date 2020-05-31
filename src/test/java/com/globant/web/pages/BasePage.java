@@ -2,6 +2,7 @@ package com.globant.web.pages;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -84,6 +86,10 @@ public class BasePage {
      */
     public void waitAllElementsVisibility(List<WebElement> element) {
         getWait().until(ExpectedConditions.visibilityOfAllElements(element));
+    }
+
+    public void waitAllElementsPresenceOfByCSS(String locator) {
+        getWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(locator)));
     }
 
     /**
@@ -222,6 +228,26 @@ public class BasePage {
         waitElementVisibility(element);
         for (WebElement option : new Select(element).getOptions())
             if (!expectedOptions.contains(option.getText())) return false;
+        return true;
+    }
+
+    public List<Integer> hoursFormatToTotalMinutes(List<WebElement> durationList) {
+        ArrayList<Integer> listMinutes = new ArrayList<>();
+        for (WebElement duration : durationList) {
+            String[] occurrences = duration.getText().split(" ");
+            int hours = Integer.parseInt(occurrences[0].substring(0, occurrences[0].indexOf('h')));
+            int minutes = Integer.parseInt(occurrences[1].substring(0, occurrences[1].indexOf('m')));
+            int totalMinutes = ((hours * 60) + minutes);
+            listMinutes.add(totalMinutes);
+        }
+        return listMinutes;
+    }
+
+    public boolean validateOrderListIntegers(List<Integer> listIntegers) {
+        for (int i = 1; i < listIntegers.size(); i++) {
+            if (listIntegers.get(i - 1).compareTo(listIntegers.get(i)) > 0)
+                return false;
+        }
         return true;
     }
 

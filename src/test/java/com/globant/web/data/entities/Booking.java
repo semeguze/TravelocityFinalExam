@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Booking {
     private SearchOptions searchOptions;
+    private SelectOptions selectOptions;
     private Hotel hotel;
     private Person person;
 }

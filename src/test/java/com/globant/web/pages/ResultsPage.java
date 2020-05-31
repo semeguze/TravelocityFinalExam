@@ -1,6 +1,7 @@
 package com.globant.web.pages;
 
 import com.globant.web.data.entities.Hotel;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @author Sebastian Mesa
  */
+@Slf4j
 public class ResultsPage extends BasePage {
 
     // Labels
@@ -29,10 +31,18 @@ public class ResultsPage extends BasePage {
     // Containers
     @FindBy(className = "flight-module")
     private List<WebElement> listHotelsContainer;
+    @FindBy(className = "duration-emphasis")
+    private List<WebElement> listDurationsContainer;
 
     // Dropdown
     @FindBy(id = "sortDropdown")
     private WebElement sortingDropdown;
+
+    // Modal
+    @FindBy(className = "modal-body")
+    private WebElement addHotelModal;
+    @FindBy(id = "forcedChoiceNoThanks")
+    private WebElement closeModalButton;
 
     /**
      * Constructor.
@@ -122,8 +132,7 @@ public class ResultsPage extends BasePage {
     }
 
     public boolean verifySelectButtonPresence() {
-        getWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("[data-test-id='offer-listing']")));
-        System.out.println("Hotels : " + listHotelsContainer.size());
+        waitAllElementsPresenceOfByCSS("[data-test-id='offer-listing']");
         for (WebElement hotel : listHotelsContainer)
             if (!hotel.findElement(By.cssSelector(".grid-container button")).isDisplayed()) return false;
         return true;
@@ -143,12 +152,33 @@ public class ResultsPage extends BasePage {
 
     public void sortResults(String sortingValue) {
         selectFromDropdownByValue(sortingDropdown, sortingValue);
-        getWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("[data-test-id='offer-listing']")));
+        waitElementStaleness(listHotelsContainer.get(0));
     }
 
     public boolean verifyListIsSorted() {
-        for (WebElement hotel : listHotelsContainer)
-            System.out.println("===============\n"+hotel.getText());
-        return true;
+        waitAllElementsPresenceOfByCSS("[data-test-id='offer-listing']");
+        return validateOrderListIntegers(hoursFormatToTotalMinutes(listDurationsContainer));
+    }
+
+    public void selectResult(int optionToSelect, boolean isStalenessNeeded) {
+        if (isStalenessNeeded) waitElementStaleness(listHotelsContainer.get(0));
+        waitAllElementsPresenceOfByCSS("[data-test-id='offer-listing']");
+
+        WebElement hotelByOption = listHotelsContainer.get(optionToSelect - 1);
+        click(hotelByOption.findElement(By.cssSelector(".grid-container button")));
+        try {
+            click(hotelByOption.findElement(By.cssSelector(".toggle-pane button")));
+        } catch (Exception exception) {
+            log.warn("The second select button is not displayed so it is not needed to click on it.");
+        }
+    }
+
+    public RecapPage managePopup() {
+        try {
+            waitForModalAndCloseIt(addHotelModal, closeModalButton);
+        } catch (Exception e) {
+            log.warn("The optional modal is not displayed this time.");
+        }
+        return new RecapPage(getDriver());
     }
 }

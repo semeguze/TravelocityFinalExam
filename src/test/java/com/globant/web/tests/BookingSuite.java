@@ -12,7 +12,6 @@ import java.util.Arrays;
 
 import static com.globant.web.utils.errorMessages.ErrorFinalDataPage.*;
 import static com.globant.web.utils.errorMessages.ErrorPersonalDataPage.*;
-import static com.globant.web.utils.errorMessages.ErrorRecapPage.*;
 import static com.globant.web.utils.errorMessages.ErrorResultsPage.ERROR_LIST_HOTELS_EMPTY;
 
 /**
@@ -59,9 +58,21 @@ public class BookingSuite extends BaseTest {
                 "Departure (Latest)", "Arrival (Earliest)", "Arrival (Latest)")), "");
         Assert.assertTrue(resultsPage.verifySelectButtonPresence(), "");
         Assert.assertTrue(resultsPage.verifyFlightDurationPresence(), "");
-        Assert.assertTrue(resultsPage.verifyFlightFeesAndDetailsPresence(), "");
+        //Assert.assertTrue(resultsPage.verifyFlightFeesAndDetailsPresence(), "");
         resultsPage.sortResults("duration:asc");
         Assert.assertTrue(resultsPage.verifyListIsSorted(), "");
+
+        log.info("Selecting departure, option : {}", booking.getSelectOptions().getOptionDeparture());
+        resultsPage.selectResult(booking.getSelectOptions().getOptionDeparture(), false);
+        log.info("Selecting return, option : {}", booking.getSelectOptions().getOptionReturn());
+        resultsPage.selectResult(booking.getSelectOptions().getOptionReturn(), true);
+
+        // ************************************************************************************************************
+        // RECAP DATA PAGE
+        RecapPage recapPage = resultsPage.managePopup();
+
+        recapPage.moveToNewTab();
+
 
         resultsPage.filterByFiveStars();
         Assert.assertFalse(resultsPage.verifyAmountResults(), ERROR_LIST_HOTELS_EMPTY);
@@ -72,7 +83,8 @@ public class BookingSuite extends BaseTest {
 
         // ************************************************************************************************************
         // RECAP DATA PAGE
-        RecapPage recapPage = resultsPage.confirmHotelSelection(hotelToSelect);
+        /*
+        RecapPage recapPage = null;
 
         Assert.assertTrue(recapPage.verifyNameHotel().contains(booking.getHotel().getName()), ERROR_LABEL_HOTEL_NAME_TEXT);
         Assert.assertEquals(recapPage.verifyTotalPriceHotel(), booking.getHotel().getPrice(), ERROR_LABEL_HOTEL_PRICE_TEXT);
@@ -82,6 +94,7 @@ public class BookingSuite extends BaseTest {
         Assert.assertTrue(recapPage.verifyCheckoutDate().contains(Integer.toString(booking.getSearchOptions().getCheckoutDate().getDayOfMonth())), ERROR_LABEL_DATE_CHECKOUT_TEXT);
 
         log.info("Confirming selection of : {}", booking.getHotel().getName());
+         */
 
         // ************************************************************************************************************
         // PERSONAL DATA PAGE

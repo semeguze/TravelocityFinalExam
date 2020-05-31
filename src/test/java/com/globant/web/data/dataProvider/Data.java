@@ -1,9 +1,6 @@
 package com.globant.web.data.dataProvider;
 
-import com.globant.web.data.entities.Booking;
-import com.globant.web.data.entities.CreditCard;
-import com.globant.web.data.entities.Person;
-import com.globant.web.data.entities.SearchOptions;
+import com.globant.web.data.entities.*;
 import org.testng.annotations.DataProvider;
 
 import java.time.LocalDate;
@@ -37,8 +34,8 @@ public class Data {
                                                 .holderName("SEBASTIAN MESA").cardType("Visa")
                                                 .cardNumber("4770353152360510").monthExpiration("10")
                                                 .yearExpiration("2021").cardCVC("123").build())
-                                .build())
-                        .build(),
+                                .build()).selectOptions(
+                        SelectOptions.builder().optionDeparture(1).optionReturn(3).build()).build(),
                 2
         }};
     }

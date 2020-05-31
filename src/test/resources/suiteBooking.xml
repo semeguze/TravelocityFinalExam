@@ -5,7 +5,7 @@
     <listeners>
         <listener class-name="com.globant.web.listeners.Listener"/>
     </listeners>
-    <parameter name="browser" value="firefox"/>
+    <parameter name="browser" value="chrome"/>
     <parameter name="url" value="https://www.travelocity.com/"/>
     <test name="Booking">
         <classes>
